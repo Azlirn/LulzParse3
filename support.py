@@ -1,4 +1,3 @@
-import LulzParse3
 import time
 import re
 import os
@@ -178,6 +177,8 @@ class Lulz3Support:
             connection = urllib2.urlopen(url)
             connectionCode = connection.getcode()
             connection.close()
+            # r = request.get(url)
+            # if r.status_code == 200
         except urllib2.HTTPError, e:
             connectionCode = e.getcode()
 
