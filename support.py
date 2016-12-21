@@ -161,11 +161,12 @@ class Lulz3Support:
     # containing the ID is found. This is used to check for duplicate pastebin dumps that have already been processed.
     def checkForDuplicateFiles(self, ID):
         path = "data/"
+
         try:
             for root, dirs, files in os.walk(path):
                 for file in files:
                     if ID in file:
-                        files.append(file)
+                        # files.append(file)
                         filePath = str(os.path.abspath(file))
                         return filePath
         except Exception as e:
