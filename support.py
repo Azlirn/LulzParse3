@@ -37,96 +37,105 @@ class Lulz3Support:
                              '@yahoo.com.sg', '@live.cl', '@netscape.net', '@juno.com', '@freemail.hu', '@gmx.xom',
                              '@charter.net', '@live.de', '@uol.com.br', '@ovi.com', '@live.com.pt', '@viola.fr',
                              '@bigpond.com', '@sapo.pt', '@yahoo.com.ph', '@terra.com.br', '@inbox.lv', '@mail.ru',
-                             '@yandex.ru', '@myspace', '@126.com', '@163.com', '@qq.com', '@roadrunner.com']
+                             '@yandex.ru', '@myspace', '@126.com', '@163.com', '@qq.com', '@roadrunner.com',
+                             '@hotmail.co']
 
-    # def rmDomain(self, webContent, ID):
-    #     start_time = time.time()
-    #     hitcounter = 0
-    #     pcounter = 0
-    #
-    #     try:
-    #         with open(newfile, 'w') as nFile:
-    #             try:
-    #                 for line in webContent:
-    #                     pcounter = pcounter + 1
-    #                     lowerLine = line.lower()
-    #                     if not any(domain in lowerLine for domain in self.emailDomains):
-    #                         nFile.write(line)
-    #                         hitcounter = hitcounter + 1
-    #                 print '\r[*] {%s} lines read...' % (pcounter),
-    #                 nFile.close()
-    #
-    #             except Exception as e:
-    #                 print '[!] Error Occurred: %s' % e
-    #                 #
-    #                 # Uncomment the below if you would like the script to restart to 'main' if it encounters an error
-    #                 #
-    #
-    #                 # print '[*] Restarting script...'
-    #                 # time.sleep(5)
-    #                 # reload(main())
-    #
-    #     except Exception as e:
-    #         print "[!] Error reading paste content: %s" % e
-    #         time.sleep(3)
-    #         reload(LulzParse3.main())
-    #
-    #     ctime = time.time() - start_time
-    #
-    #     print '\n[*] %s was saved' % newfile
-    #     print '[*] There are %s lines in your saved file.' % hitcounter
-    #     print '[*] You processed %s total lines.\n' % pcounter
-    #
-    #     print "[*] === Completed in %s seconds === [*]" % ctime
-    #
-    #     print "\n[!] === Checking Possible SLTT Matches ===\n"
-    #     time.sleep(2)
-    #     self.chkRemaining(newfile)
+    def rmDomain(self, pastebinID, file):
+        start_time = time.time()
+        hitcounter = 0
+        pcounter = 0
+        strippedFilePath = "data/pastebin/%s/%s/%s/%s/" % (self.year, self.month, self.today, pastebinID)
+        newfile = strippedFilePath+'stripped_%s.txt' % pastebinID
 
-    # def file_to_str(self, file):
-    #     """Returns the contents of filename as a string."""
-    #     with open(file) as f:
-    #         return f.read().lower()  # Case is lowered to prevent regex mismatches.
+        try:
+            print '\n[*] Evaluating content for signs of SLTT compromise...'
+            with open(newfile, 'w') as nFile:
+                try:
+                   with open(file, 'r') as filecontent:
+                        for line in filecontent:
+                            pcounter = pcounter + 1
+                            readline = line.replace(',', '').lower()
+                            if not any(domain in readline for domain in self.emailDomains):
+                                nFile.write(line)
+                                hitcounter = hitcounter + 1
+                        print '\r[*] {%s} lines read...' % (pcounter),
+                        nFile.close()
 
-    # def get_emails(self, s):
-    #     """Returns an iterator of matched emails found in string s."""
-    #     # Removing lines that start with '//' because the regular expression
-    #     # mistakenly matches patterns like 'http://foo@bar.com' as '//foo@bar.com'.
-    #     return (email[0] for email in re.findall(self.regex, s) if
-    #             not email[0].startswith('//') or email[0].startswith('\''))
+                except Exception as e:
+                    print '\n[!] ERROR: Exception occurred in LulzParse.rmDomain() while evaluating webContent+++> %s' % e
+                    #
+                    # Uncomment the below if you would like the script to restart to 'main' if it encounters an error
+                    #
 
-    # def chkRemaining(self, newfile):
-    #     start_time = time.time()
-    #     hitcounter = 0
-    #
-    #     possibleMatches = open('PossibleMatches_' + newfile, 'a')
-    #
-    #     try:
-    #         with open(newfile, 'r') as chkFile:
-    #             for line in chkFile:
-    #                 for email in self.get_emails(line):
-    #                     if any(item in email for item in self.govDomains):
-    #                         hitcounter = hitcounter + 1
-    #                         possibleMatches.write(line)
-    #
-    #     except Exception as e:
-    #         print "[!] Error Processing File: %s" % e
-    #         time.sleep(5)
-    #         reload(LulzParse3.main())
-    #
-    #     ctime = time.time() - start_time
-    #
-    #     print '\n[*] I identified %s potential SLTT records in your saved file.' % hitcounter
-    #
-    #     if hitcounter >= 1:
-    #         print "[*] This dump should be processed."
-    #         print "[**] Possible matches stored to your working directory"
-    #     else:
-    #         print "Ignore this shit..."
-    #
-    #     print "\n[*] === Completed check in %s seconds === [*]" % ctime
-    #     time.sleep(2)
-    #     exit()
+                    # print '[*] Restarting script...'
+                    # time.sleep(5)
+                    # reload(main())
+
+        except Exception as e:
+            print '\n[!] ERROR: Unhandled Exception occurred in LulzParse.rmDomain() +++> %s' % e
+            time.sleep(3)
+            reload(LulzParse3.main())
+
+        ctime = time.time() - start_time
+
+        print '\n[*] %s was saved' % newfile
+        print '[*] There are %s lines in your saved file.' % hitcounter
+        print '[*] You processed %s total lines.\n' % pcounter
+
+        print "[*] === Completed in %s seconds === [*]" % ctime
+        time.sleep(1)
+
+        print "\n[!] === Checking Possible SLTT Matches ===\n"
+        time.sleep(2)
+        self.chkRemaining(newfile, strippedFilePath, pastebinID)
+
+    def file_to_str(self, file):
+        """Returns the contents of filename as a string."""
+        with open(file) as f:
+            return f.read().lower()  # Case is lowered to prevent regex mismatches.
+
+    def get_emails(self, s):
+        """Returns an iterator of matched emails found in string s."""
+        # Removing lines that start with '//' because the regular expression
+        # mistakenly matches patterns like 'http://foo@bar.com' as '//foo@bar.com'.
+        return (email[0] for email in re.findall(self.regex, s) if
+                not email[0].startswith('//') or email[0].startswith('\''))
+
+    def chkRemaining(self, newfile, strippedFilePath, pastebinID):
+        start_time = time.time()
+        hitcounter = 0
+
+        path = strippedFilePath
+
+        possibleMatches = open(path+'PossibleMatches_%s.txt' % pastebinID, 'a')
+
+        try:
+            with open(newfile, 'r') as chkFile:
+                for line in chkFile:
+                    # for email in self.get_emails(line):
+                    #     if any(item in email for item in self.govDomains):
+                    if any(item in line for item in self.govDomains):
+                        hitcounter = hitcounter + 1
+                        possibleMatches.write(line)
+
+        except Exception as e:
+            print "[!] Error Processing File: %s" % e
+            time.sleep(5)
+            reload(LulzParse3.main())
+
+        ctime = time.time() - start_time
+
+        print '\n[*] I identified %s potential SLTT records in your saved file.' % hitcounter
+
+        if hitcounter >= 1:
+            print "[*] This dump should be processed."
+            print "[**] Possible matches stored to your working directory"
+        else:
+            print "Ignore this shit..."
+
+        print "\n[*] === Completed check in %s seconds === [*]" % ctime
+        time.sleep(2)
+
 
     # A method that downloads a pastebin post, provided a unique pastebin ID. The pastebin post is saved to the
     # 'data/pastebin/year/month/today' directory.
@@ -135,14 +144,10 @@ class Lulz3Support:
         path = 'data/pastebin/%s/%s/%s/%s' % (self.year, self.month, self.today, pasteID)
 
         # Create a folder in the data/pastebin/year/month/today/pasteID directory to store the downloaded paste.
-        try:
-            if not os.path.exists(path):
-                os.makedirs(path)
-        except Exception as e:
-            print '\n[!] ERROR: Exception occurred in LulzParse.downloadPastebin() while attempting to create a new directory +++> %s' % e
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-        # Call a method to check for duplicate pastebin dumps. If an old dump is found, exit the program.
-        print '{*} Downloading a copy of the original paste to \"data/pastebin/%s/%s/%s/%s\" for historical purposes...' % (
+        print '{*} Downloading a copy of the original paste to path \"data/pastebin/%s/%s/%s/%s/\" for historical purposes...' % (
             self.year, self.month, self.today, pasteID)
         pasteFile = "%s/ORIGINAL_%s.txt" % (path, pasteID)
 
@@ -155,7 +160,7 @@ class Lulz3Support:
         # Return the content of the paste in the webContent variable. This eliminates the need to open the pastebin file
         # in the future, allowing it to be processed from memory. Adding this should increase the speed of pastebin
         # processing.
-        return webContent
+        return pasteFile
 
     # This method checks the pastebin directory for IDs that match the user input and returns True if one is a filename
     # containing the ID is found. This is used to check for duplicate pastebin dumps that have already been processed.
@@ -180,14 +185,11 @@ class Lulz3Support:
             connection.close()
             # r = request.get(url)
             # if r.status_code == 200
-        except urllib2.HTTPError, e:
+        except urllib2.HTTPError or urllib2.URLError, e:
             connectionCode = e.getcode()
 
         if connectionCode == 200:
             return True
         else:
-            print "[!] %s did not return a good response... Try again..." % url
-            print "{!} URL returned status code: %s" % connectionCode
-            time.sleep(3)
-            reload(LulzParse3.main())
-        return connectionCode
+            return False
+
