@@ -30,7 +30,7 @@ def mainMenu():
     \_____/\__,_|_/___\_|  \__,_|_|  |___/\___| \____/
 
         '''
-    print '\n[*] Thanks to leakedsource.com for providing an awesome list of domains to ignore.'
+    print '\n[*] Thanks to leakedsource.com for providing an awesome list of domains to ignore.\n'
 
     menu = {'1': "Pastebin", '2': "Ghostbin", '3': "Text File", '4': "CSV File", '5': "Exit"}
     while True:
@@ -39,7 +39,7 @@ def mainMenu():
         for entry in options:
             print entry, menu[entry]
 
-        selection = raw_input("Please Select:")
+        selection = raw_input("\n{*} Please Select: ")
         if selection == '1':
             pastebinMain()
         elif selection == '2':
@@ -65,23 +65,62 @@ def pastebinMain():
     try:
         if LulzParse.urlChecker(url):
             print '\n[*] === ID is Valid === [*]'
+        else:
+            print "[!] %s did not return a good response... Try again..." % url
+            time.sleep(1)
+            reload(mainMenu())
 
         print "\n[*] Checking records to see if file containing your ID was previously processed..."
+
         if LulzParse.checkForDuplicateFiles(pastebinID):
             filePath = LulzParse.checkForDuplicateFiles(pastebinID)
             print '\n[!] It appears you may be trying to process a dump that has previously been parsed.'
             print '{*} A file was found here: %s' % filePath
-            print '\n[!] LulzParse3 will now exit...'
-            time.sleep(3)
-            exit()
+            print '\n{*} Would you like to process this file anyway?'
+            print '{*} WARNING: THIS MAY OVERWRITE ANY OLD DATA!\n'
+            menu = {'Y :': "Continue", 'N :': "Don't Process", 'Q :': "Exit Program"}
+            status = True
+            while status is True:
+                options = menu.keys()
+                for entry in options:
+                    print entry, menu[entry]
+                selection = raw_input("\n{*} Please Select: ")
+                if selection == 'Y':
+                    status = False
+                    try:
+                        pasteFile = LulzParse.downloadPastebin(pastebinID, url)
+                        LulzParse.rmDomain(pastebinID, pasteFile)
+                    except Exception as e:
+                        print '\n[!] ERROR: Exception occurred in LulzParse3.pastebinMain() while attempting to process a possible duplicate dump +++> %s' % e
+                elif selection == 'N':
+                    print '[*] Exiting Application'
+                    time.sleep(2)
+                    exit()
+                elif selection == 'Q':
+                    print '[*] Exiting Application'
+                    time.sleep(2)
+                    exit()
+                else:
+                    print "[!] Unknown Option Selected!"
+                    time.sleep(2)
+                    exit()
+            else:
+                exit()
+
         else:
             print '\n[*] Congratulations Paul! This dump appears to be new!'
             time.sleep(1)
             raw_input("\n[!] Press any key to start...\n")
-            LulzParse.downloadPastebin(pastebinID, url)
+            try:
+                webcontent = LulzParse.downloadPastebin(pastebinID, url)
+                LulzParse.rmDomain(pastebinID, webcontent)
+            except Exception as e:
+                print '\n[!] ERROR: Exception occurred in LulzParse3.pastebinMain() +++> %s' % e
+
+
 
     except Exception as e:
-        print '\n[!] ERROR: Unhandled Exception occurred in LulzParse3.main() +++> %s' % e
+        print '\n[!] ERROR: Unhandled Exception occurred in LulzParse3.pastebinMain +++> %s' % e
 
 
 if __name__ == '__main__':
